@@ -120,6 +120,15 @@ class Bitmask:
 
         return f"{_fullname(self)}({args})"
 
+    def __eq__(self, other):
+        """Check equality."""
+        if not issubclass(type(other), type(self)):
+            return False
+        elif not issubclass(other.AllFlags, self.AllFlags):
+            return False
+        else:
+            return other.value == self.value
+
     def _flag_op(self, flag, op):
         """Apply a single flag to the bitmask.
 
@@ -147,7 +156,7 @@ class Bitmask:
             for flag in other:
                 new_bitmask._flag_op(flag, op)
         elif issubclass(type(other), self.AllFlags):
-            new_bitmask._flag_op(flag, op)
+            new_bitmask._flag_op(other, op)
         else:
             raise TypeError(f"can only apply {type(self)} or {self.AllFlags} (not '{type(other)}') to {type(self)}")
 
