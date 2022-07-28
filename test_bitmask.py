@@ -118,8 +118,6 @@ class TestBitmask(unittest.TestCase):
             self.bmask.value = 1j
         with self.assertRaises(TypeError):
             self.bmask.value = 2.5
-        with self.assertRaises(TypeError):
-            self.bmask.value = -1
 
     def test_contains(self):
         """Test `flag in mask` check."""
