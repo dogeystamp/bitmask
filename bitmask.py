@@ -173,6 +173,13 @@ class Bitmask:
     def __radd__(self, other):
         return self.__add__(other)
 
+    def discard(self, flag):
+        """Remove flag bitmask if present.
+
+        This behaves the same as built-in `set.discard()`.
+        """
+        self._flag_op(flag, lambda a, b : a & ~b)
+
     def remove(self, flag):
         """Remove `flag` from the bitmask.
 
@@ -183,12 +190,4 @@ class Bitmask:
         """
         if not flag in self:
             raise KeyError(flag)
-        self._flag_op(flag, lambda a, b : a ^ b)
-
-    def discard(self, flag):
-        """Remove flag bitmask if present.
-
-        This behaves the same as built-in `set.discard()`.
-        """
-        if flag in self:
-            self.remove(flag)
+        self.discard(flag)
