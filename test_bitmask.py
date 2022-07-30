@@ -76,6 +76,8 @@ class TestBitmask(unittest.TestCase):
             self.bmask.remove(Desc.SMALL)
         with self.assertRaises(KeyError):
             self.bmask_empty.remove(Desc.SMALL)
+        with self.assertRaises(TypeError):
+            self.bmask_empty.remove(self.bmask2)
     
     def test_discard(self):
         """Test the `Bitmask.discard()` method."""
@@ -93,6 +95,22 @@ class TestBitmask(unittest.TestCase):
         self.assertEqual(
             self.bmask_empty,
             Bitmask(Desc)
+        )
+        with self.assertRaises(TypeError):
+            self.bmask_empty.remove(self.bmask2)
+
+    def test_subtract(self):
+        """Test various subtraction operators."""
+        # Operation
+        self.assertEqual(
+            self.bmask - Desc.SMALL,
+            Bitmask(Desc, Desc.FUNKY)
+        )
+        # Assignment
+        self.bmask -= Desc.SMALL
+        self.assertEqual(
+            self.bmask,
+            Bitmask(Desc, Desc.FUNKY)
         )
 
     def test_value(self):

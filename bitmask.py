@@ -171,14 +171,40 @@ class Bitmask:
         return self.__mask_op(other, lambda a, b : a | b)
 
     def __radd__(self, other):
+        """Alias the + operator in reverse."""
         return self.__add__(other)
+
+    def __iadd__(self, other):
+        """Union bitmasks/flags together.
+
+        Aliased to `Bitmask.__add__`.
+        """
+        return self + other
+
+    def __sub__(self, other):
+        """Subtract by bitmask/flag."""
+        return self.__mask_op(other, lambda a, b : a & ~b)
+
+    def __isub__(self, other):
+        """Subtract a bitmask/flag.
+
+        Aliased to `Bitmask.__sub__`.
+        """
+        self = self - other
+        return self
 
     def discard(self, flag):
         """Remove flag bitmask if present.
 
         This behaves the same as built-in `set.discard()`.
+
+        Raises:
+            TypeError: `flag` is not a single Enum value.
         """
-        self._flag_op(flag, lambda a, b : a & ~b)
+        if not issubclass(type(flag), self._AllFlags):
+            raise TypeError(f"can only discard {self.AllFlags} (not '{type(flag)}') from {type(self)}")
+
+        return self._flag_op(flag, lambda a, b : a & ~b)
 
     def remove(self, flag):
         """Remove `flag` from the bitmask.
@@ -189,5 +215,6 @@ class Bitmask:
             KeyError: flag is not in bitmask.
         """
         if not flag in self:
-            raise KeyError(flag)
+            raise KeyError(type(flag), self.AllFlags)
+
         self.discard(flag)
