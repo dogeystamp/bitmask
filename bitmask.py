@@ -96,8 +96,17 @@ class Bitmask:
         self._value = value
     
     def __contains__(self, item):
-        """Determine if flag is enabled."""
-        return self.value & item
+        """Determine if a mask is enabled."""
+        if issubclass(type(item), type(self)):
+            for flag in item:
+                if not flag in self:
+                    return False
+            else:
+                return True
+        elif issubclass(type(item), self.AllFlags):
+            return bool(self.value & item)
+        else:
+            raise TypeError(f"item must be an {type(self)} or {self.AllFlags} (got '{type(item)}')")
 
     def __iter__(self):
         """Return list of enabled flags."""
@@ -156,8 +165,7 @@ class Bitmask:
         new_bitmask = self.__class__(self.AllFlags, *(flag for flag in self))
 
         if issubclass(type(other), type(self)):
-            for flag in other:
-                new_bitmask._flag_op(flag, op)
+            new_bitmask.value = op(self.value, other.value)
         elif issubclass(type(other), self.AllFlags):
             new_bitmask._flag_op(other, op)
         else:
@@ -170,7 +178,7 @@ class Bitmask:
         self._flag_op(other, lambda a, b : a | b)
 
     def __add__(self, other):
-        """Union bitmasks/flags together."""
+        """Implement + operator."""
         return self.__mask_op(other, lambda a, b : a | b)
 
     def __radd__(self, other):
@@ -178,11 +186,56 @@ class Bitmask:
         return self.__add__(other)
 
     def __iadd__(self, other):
-        """Union bitmasks/flags together.
+        """Implement += operator.
 
         Aliased to `Bitmask.__add__`.
         """
         return self + other
+
+    def __or__(self, other):
+        """Implement | operator."""
+        return self + other
+
+    def __ror__(self, other):
+        """Alias the | operator in reverse."""
+        return self.__or__(other)
+
+    def __ior__(self, other):
+        """Implement |= operator.
+
+        Aliased to `Bitmask.__add__`.
+        """
+        return self | other
+
+    def __xor__(self, other):
+        """Implement ^ operator."""
+        return self.__mask_op(other, lambda a, b : a ^ b)
+
+    def __rxor__(self, other):
+        """Alias the ^ operator in reverse."""
+        return self.__xor__(other)
+
+    def __ixor(self, other):
+        """Implement ^= operator.
+
+        Aliased to `Bitmask.__xor__`.
+        """
+        return self ^ other
+
+    def __and__(self, other):
+        """AND bitmasks/flags together."""
+        return self.__mask_op(other, lambda a, b : a & b)
+
+    def __rand__(self, other):
+        """Alias the & operator in reverse."""
+        return self.__and__(other)
+
+    def __iand(self, other):
+        """AND bitmasks/flags together.
+
+        Aliased to `Bitmask.__and__`.
+        """
+        return self & other
 
     def __sub__(self, other):
         """Subtract by bitmask/flag."""

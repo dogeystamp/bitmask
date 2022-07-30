@@ -135,6 +135,130 @@ class TestBitmask(unittest.TestCase):
             mask,
             Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
         )
+
+        # Bitmasks
+        mask = Bitmask(Desc)
+        mask += Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
+        )
+
+    def test_or_operator(self):
+        """Test | operator."""
+        # Individual flags
+        mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
+        self.assertEqual(
+            mask | Desc.ROUND,
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+        )
+        self.assertEqual(
+            Desc.ROUND | mask,
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+        )
+        self.assertEqual(
+            Desc.SMALL | mask,
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
+        )
+        self.assertEqual(
+            Bitmask(Desc) | Desc.ROUND,
+            Bitmask(Desc, Desc.ROUND)
+        )
+
+        # Union of bitmasks
+        self.assertEqual(
+            Bitmask(Desc, Desc.SMALL) | Bitmask(Desc, Desc.FUNKY, Desc.ROUND),
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+        )
+        self.assertEqual(
+            Bitmask(Desc, Desc.FUNKY, Desc.ROUND) | Bitmask(Desc, Desc.SMALL),
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+        )
+        self.assertEqual(
+            Bitmask(Desc) | Bitmask(Desc),
+            Bitmask(Desc),
+        )
+
+    def test_or_inline(self):
+        """Test |= operator."""
+        # Individual flags
+        mask = Bitmask(Desc)
+        mask |= Desc.FUNKY
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY)
+        )
+        mask |= Desc.ROUND
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
+        )
+
+        # Bitmasks
+        mask = Bitmask(Desc)
+        mask |= Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
+        )
+
+    def test_and_operator(self):
+        """Test & operator."""
+        # Individual flags
+        mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
+        self.assertEqual(
+            mask & Desc.SMALL,
+            Bitmask(Desc, Desc.SMALL)
+        )
+        self.assertEqual(
+            Desc.SMALL & mask,
+            Bitmask(Desc, Desc.SMALL)
+        )
+        self.assertEqual(
+            Desc.ROUND & mask,
+            Bitmask(Desc)
+        )
+        self.assertEqual(
+            Bitmask(Desc) & Desc.ROUND,
+            Bitmask(Desc)
+        )
+
+        # AND of bitmasks
+        self.assertEqual(
+            Bitmask(Desc, Desc.FUNKY, Desc.SONAR) & Bitmask(Desc, Desc.FUNKY, Desc.ROUND),
+            Bitmask(Desc, Desc.FUNKY)
+        )
+        self.assertEqual(
+            Bitmask(Desc, Desc.FUNKY, Desc.ROUND) & Bitmask(Desc, Desc.SMALL),
+            Bitmask(Desc)
+        )
+        self.assertEqual(
+            Bitmask(Desc) & Bitmask(Desc),
+            Bitmask(Desc),
+        )
+
+    def test_and_inline(self):
+        """Test &= operator."""
+        # Individual flags
+        mask = Bitmask(Desc, Desc.FUNKY, Desc.SMALL)
+        mask &= Desc.FUNKY
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY)
+        )
+        mask &= Desc.ROUND
+        self.assertEqual(
+            mask,
+            Bitmask(Desc)
+        )
+
+        # Bitmasks
+        mask = Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
+        mask &= Bitmask(Desc, Desc.SMALL)
+        self.assertEqual(
+            mask,
+            Bitmask(Desc)
+        )
             
     def test_remove(self):
         """Test the `Bitmask.remove()` method."""
@@ -207,6 +331,70 @@ class TestBitmask(unittest.TestCase):
             Bitmask(Desc, Desc.FUNKY)
         )
 
+    def test_xor_operator(self):
+        """Test ^ operator."""
+        # Individual flags
+        mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
+        self.assertEqual(
+            mask ^ Desc.ROUND,
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+        )
+        self.assertEqual(
+            Desc.ROUND ^ mask,
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+        )
+        self.assertEqual(
+            Desc.SMALL ^ mask,
+            Bitmask(Desc, Desc.FUNKY)
+        )
+        self.assertEqual(
+            Bitmask(Desc) ^ Desc.ROUND,
+            Bitmask(Desc, Desc.ROUND)
+        )
+
+        # XOR bitmasks
+        self.assertEqual(
+            Bitmask(Desc, Desc.SMALL) ^ Bitmask(Desc, Desc.FUNKY, Desc.ROUND),
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+        )
+        self.assertEqual(
+            Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
+            ^ Bitmask(Desc, Desc.FUNKY, Desc.ROUND),
+            Bitmask(Desc),
+        )
+        self.assertEqual(
+            Bitmask(Desc) ^ Bitmask(Desc),
+            Bitmask(Desc),
+        )
+
+    def test_xor_inline(self):
+        """Test ^= operator."""
+        # Individual flags
+        mask = Bitmask(Desc)
+        mask ^= Desc.FUNKY
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY)
+        )
+        mask ^= Desc.ROUND
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
+        )
+        mask ^= Desc.ROUND
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY)
+        )
+
+        # Bitmasks
+        mask = Bitmask(Desc, Desc.ROUND)
+        mask ^= Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
+        self.assertEqual(
+            mask,
+            Bitmask(Desc, Desc.FUNKY)
+        )
+
     def test_value(self):
         """Ensure Bitmask.value lines up with the state."""
         mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
@@ -237,12 +425,24 @@ class TestBitmask(unittest.TestCase):
         mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
         empty_mask = Bitmask(Desc)
 
+        # Individual flags
         self.assertIn(Desc.FUNKY, mask)
         self.assertIn(Desc.SMALL, mask)
         self.assertNotIn(Desc.ROUND, mask)
         self.assertNotIn(Desc.ROUND, empty_mask)
+
+        # Bitmasks
+        self.assertIn(mask, mask)
+        self.assertIn(
+            Bitmask(Desc, Desc.SMALL, Desc.FUNKY),
+            mask
+        )
+        self.assertIn(
+            Bitmask(Desc, Desc.FUNKY),
+            mask
+        )
         with self.assertRaises(TypeError):
-            mask in mask
+            x = 1 in mask
 
     def test_iter(self):
         """Test iteration."""
