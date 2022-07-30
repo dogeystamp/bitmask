@@ -6,6 +6,7 @@ class Desc(IntFlag):
     SMALL = 1
     ROUND = 1 << 1
     FUNKY = 1 << 2
+    SONAR = 1 << 4
 
 class TestBitmask(unittest.TestCase):
     def test_eq(self):
@@ -283,6 +284,21 @@ class TestBitmask(unittest.TestCase):
         self.assertEqual(
             int(mask),
             mask.value
+        )
+
+    def test_hex(self):
+        """Test hexadecimal conversion."""
+        self.assertEqual(
+            hex(Bitmask(Desc, Desc.SMALL)),
+            "0x1"
+        )
+        self.assertEqual(
+            hex(Bitmask(Desc)),
+            "0x0"
+        )
+        self.assertEqual(
+            hex(Bitmask(Desc, Desc.SONAR)),
+            "0x10"
         )
 
 if __name__ == '__main__':

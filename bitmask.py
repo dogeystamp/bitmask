@@ -108,6 +108,9 @@ class Bitmask:
     def __int__(self):
         return int(self.value)
 
+    def __index__(self):
+        return int(self)
+
     def __str__(self):
         return '|'.join([flag.name for flag in self]) or "0"
 
