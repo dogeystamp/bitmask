@@ -3,13 +3,7 @@
 
 """Utilities for manipulating bitmasks."""
 
-def _fullname(obj):
-    """Get the full class name of an object, including module.
-
-    Returns:
-        String with class name, which can be used in an `eval()`.
-    """
-    return f"{obj.__class__.__qualname__}"
+import bitmask.util as util
 
 class Bitmask:
     """Generic bitmask, which represents multiple Enum values.
@@ -103,13 +97,13 @@ class Bitmask:
         return '|'.join([flag.name for flag in self]) or "0"
 
     def __repr__(self):
-        enum_name = _fullname(self.AllFlags(0))
+        enum_name = util.fullname(self.AllFlags(0))
         args = ', '.join(
             [enum_name] +
             [f"{enum_name}.{flag.name}" for flag in self]
         )
 
-        return f"{_fullname(self)}({args})"
+        return f"{util.fullname(self)}({args})"
 
     def __eq__(self, other):
         """Check equality."""
