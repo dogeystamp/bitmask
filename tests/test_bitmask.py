@@ -11,21 +11,31 @@ class Desc(IntFlag):
     FUNKY = 1 << 2
     SONAR = 1 << 4
 
+class Colors(IntFlag):
+    TEAL = 1
+    PINK = 1 << 1
+    BLUE = 1 << 2
+
 def test_eq():
     """Test equality checks."""
+    # Equality
     assert Bitmask(Desc) == Bitmask(Desc)
     assert Bitmask(Desc, Desc.SMALL) == Bitmask(Desc, Desc.SMALL)
     assert Bitmask(Desc, Desc.SMALL, Desc.ROUND) == Bitmask(Desc, Desc.SMALL, Desc.ROUND)
     assert Bitmask(Desc, Desc.ROUND, Desc.SMALL) == Bitmask(Desc, Desc.SMALL, Desc.ROUND)
 
+    # Inequality
     assert Bitmask(Desc, Desc.SMALL) != Bitmask(Desc, Desc.SMALL, Desc.ROUND)
     assert Bitmask(Desc, Desc.SMALL) != Bitmask(Desc, Desc.ROUND)
     assert Bitmask(Desc, Desc.SMALL) != Bitmask(Desc)
     assert Bitmask(Desc, Desc.SMALL) != Desc.SMALL
     assert Bitmask(Desc, Desc.SMALL) != Desc.ROUND
     assert Bitmask(Desc) != Desc.ROUND
+
+    # Wrong types
     assert Bitmask(Desc) != "Hello World!"
     assert Bitmask(Desc) != 0
+    assert Bitmask(Desc) != Bitmask(Colors)
 
 def test_repr():
     """Ensure evaluating __repr__ creates an identical object."""
@@ -49,6 +59,8 @@ def test_add():
 
     with pytest.raises(TypeError, match="can only apply Desc to Bitmask"):
         mask.add(1)
+    with pytest.raises(TypeError, match="can only apply Bitmask or Desc to Bitmask"):
+        mask += 1
 
 def test_add_operator():
     """Test + operator."""

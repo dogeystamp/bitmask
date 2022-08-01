@@ -158,13 +158,6 @@ class Bitmask:
         """Alias the + operator in reverse."""
         return self.__add__(other)
 
-    def __iadd__(self, other):
-        """Implement += operator.
-
-        Aliased to `Bitmask.__add__`.
-        """
-        return self + other
-
     def __or__(self, other):
         """Implement | operator."""
         return self + other
@@ -172,13 +165,6 @@ class Bitmask:
     def __ror__(self, other):
         """Alias the | operator in reverse."""
         return self.__or__(other)
-
-    def __ior__(self, other):
-        """Implement |= operator.
-
-        Aliased to `Bitmask.__add__`.
-        """
-        return self | other
 
     def __xor__(self, other):
         """Implement ^ operator."""
@@ -188,13 +174,6 @@ class Bitmask:
         """Alias the ^ operator in reverse."""
         return self.__xor__(other)
 
-    def __ixor(self, other):
-        """Implement ^= operator.
-
-        Aliased to `Bitmask.__xor__`.
-        """
-        return self ^ other
-
     def __and__(self, other):
         """AND bitmasks/flags together."""
         return self.__mask_op(other, lambda a, b : a & b)
@@ -203,24 +182,9 @@ class Bitmask:
         """Alias the & operator in reverse."""
         return self.__and__(other)
 
-    def __iand(self, other):
-        """AND bitmasks/flags together.
-
-        Aliased to `Bitmask.__and__`.
-        """
-        return self & other
-
     def __sub__(self, other):
         """Subtract by bitmask/flag."""
         return self.__mask_op(other, lambda a, b : a & ~b)
-
-    def __isub__(self, other):
-        """Subtract a bitmask/flag.
-
-        Aliased to `Bitmask.__sub__`.
-        """
-        self = self - other
-        return self
 
     def discard(self, flag):
         """Remove flag bitmask if present.
