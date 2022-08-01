@@ -24,6 +24,8 @@ def test_eq():
     assert Bitmask(Desc, Desc.SMALL) != Desc.SMALL
     assert Bitmask(Desc, Desc.SMALL) != Desc.ROUND
     assert Bitmask(Desc) != Desc.ROUND
+    assert Bitmask(Desc) != "Hello World!"
+    assert Bitmask(Desc) != 0
 
 def test_repr():
     """Ensure evaluating __repr__ creates an identical object."""
@@ -44,6 +46,9 @@ def test_add():
     assert mask == Bitmask(Desc, Desc.ROUND)
     mask.add(Desc.ROUND)
     assert mask == Bitmask(Desc, Desc.ROUND)
+
+    with pytest.raises(TypeError, match="can only apply Desc to Bitmask"):
+        mask.add(1)
 
 def test_add_operator():
     """Test + operator."""
@@ -154,7 +159,7 @@ def test_discard():
     empty_mask = Bitmask(Desc)
     empty_mask.discard(Desc.SMALL)
     assert empty_mask == Bitmask(Desc)
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="can only discard Desc from Bitmask"):
         empty_mask.discard(Bitmask(Desc, Desc.SMALL))
 
 def test_subtract():
@@ -220,9 +225,9 @@ def test_value():
     assert mask == Bitmask(Desc)
     mask.value = 1
     assert mask == Bitmask(Desc, Desc.SMALL)
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="value must be an integer"):
         mask.value = 1j
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="value must be an integer"):
         mask.value = 2.5
 
 def test_contains():
@@ -239,8 +244,9 @@ def test_contains():
     # Bitmasks
     assert mask in mask
     assert Bitmask(Desc, Desc.SMALL, Desc.FUNKY) in mask
+    assert Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND) not in mask
     assert Bitmask(Desc, Desc.FUNKY) in mask
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="item must be Bitmask or Desc"):
         x = 1 in mask
 
 def test_iter():

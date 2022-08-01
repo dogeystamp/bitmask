@@ -3,7 +3,7 @@
 
 """Utilities for manipulating bitmasks."""
 
-import bitmask.util as util
+from bitmask.util import type_name, fullname
 
 class Bitmask:
     """Generic bitmask, which represents multiple Enum values.
@@ -65,7 +65,7 @@ class Bitmask:
     @value.setter
     def value(self, value):
         if not issubclass(type(value), int):
-            raise TypeError(f"value must be an integer (got '{type(value)}')")
+            raise TypeError(f"value must be an integer")
         self._value = value
     
     def __contains__(self, item):
@@ -79,7 +79,7 @@ class Bitmask:
         elif issubclass(type(item), self.AllFlags):
             return bool(self.value & item)
         else:
-            raise TypeError(f"item must be an {type(self)} or {self.AllFlags} (got '{type(item)}')")
+            raise TypeError(f"item must be {type_name(self)} or {type_name(self.AllFlags)}")
 
     def __iter__(self):
         """Return list of enabled flags."""
@@ -97,13 +97,13 @@ class Bitmask:
         return '|'.join([flag.name for flag in self]) or "0"
 
     def __repr__(self):
-        enum_name = util.fullname(self.AllFlags(0))
+        enum_name = fullname(self.AllFlags(0))
         args = ', '.join(
             [enum_name] +
             [f"{enum_name}.{flag.name}" for flag in self]
         )
 
-        return f"{util.fullname(self)}({args})"
+        return f"{fullname(self)}({args})"
 
     def __eq__(self, other):
         """Check equality."""
@@ -123,7 +123,7 @@ class Bitmask:
                 bitmask, given the initial value and the flag.
         """
         if not issubclass(type(flag), self.AllFlags):
-            raise TypeError(f"can only add {self.AllFlags} (not '{type(flag)}') to {type(self)}")
+            raise TypeError(f"can only apply {type_name(self.AllFlags)} to {type_name(self)}")
         self.value = op(self.value, flag)
 
     def __mask_op(self, other, op):
@@ -142,7 +142,7 @@ class Bitmask:
         elif issubclass(type(other), self.AllFlags):
             new_bitmask._flag_op(other, op)
         else:
-            raise TypeError(f"can only apply {type(self)} or {self.AllFlags} (not '{type(other)}') to {type(self)}")
+            raise TypeError(f"can only apply {type_name(self)} or {type_name(self.AllFlags)} to {type_name(self)}")
 
         return new_bitmask
 
@@ -231,7 +231,7 @@ class Bitmask:
             TypeError: `flag` is not a single Enum value.
         """
         if not issubclass(type(flag), self._AllFlags):
-            raise TypeError(f"can only discard {self.AllFlags} (not '{type(flag)}') from {type(self)}")
+            raise TypeError(f"can only discard {type_name(self._AllFlags)} from {type_name(self)}")
 
         return self._flag_op(flag, lambda a, b : a & ~b)
 
