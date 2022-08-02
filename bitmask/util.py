@@ -5,6 +5,7 @@
 
 import enum
 
+
 def fullname(obj):
     """Get the full class name of an object, including module.
 
@@ -13,14 +14,15 @@ def fullname(obj):
     """
     return f"{obj.__class__.__qualname__}"
 
+
 def type_name(obj):
     """Get the short type of an object.
 
     Returns:
         String with human-readable type of the object.
-    
+
     Example:
-        
+
         import bitmask.util as util
         util.type_name(1)
         >>> int

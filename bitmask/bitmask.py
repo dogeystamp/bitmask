@@ -5,6 +5,7 @@
 
 from bitmask.util import type_name, fullname
 
+
 class Bitmask:
     """Generic bitmask, which represents multiple Enum values.
 
@@ -14,7 +15,7 @@ class Bitmask:
 
     Examples:
         Initialise bitmask::
-            
+
             from bitmask import Bitmask
             from enum import IntFlag
 
@@ -39,7 +40,7 @@ class Bitmask:
             bmask.add(Desc.ROUND)
 
         Remove flag from bitmask::
-            
+
             bmask.discard(Desc.ROUND)
     """
 
@@ -65,21 +66,23 @@ class Bitmask:
     @value.setter
     def value(self, value):
         if not issubclass(type(value), int):
-            raise TypeError(f"value must be an integer")
+            raise TypeError("value must be an integer")
         self._value = value
-    
+
     def __contains__(self, item):
         """Determine if a mask is enabled."""
         if issubclass(type(item), type(self)):
             for flag in item:
-                if not flag in self:
+                if flag not in self:
                     return False
             else:
                 return True
         elif issubclass(type(item), self.AllFlags):
             return bool(self.value & item)
         else:
-            raise TypeError(f"item must be {type_name(self)} or {type_name(self.AllFlags)}")
+            raise TypeError(
+                f"item must be {type_name(self)} or {type_name(self.AllFlags)}"
+            )
 
     def __iter__(self):
         """Return list of enabled flags."""
@@ -94,14 +97,11 @@ class Bitmask:
         return int(self)
 
     def __str__(self):
-        return '|'.join([flag.name for flag in self]) or "0"
+        return "|".join([flag.name for flag in self]) or "0"
 
     def __repr__(self):
         enum_name = fullname(self.AllFlags(0))
-        args = ', '.join(
-            [enum_name] +
-            [f"{enum_name}.{flag.name}" for flag in self]
-        )
+        args = ", ".join([enum_name] + [f"{enum_name}.{flag.name}" for flag in self])
 
         return f"{fullname(self)}({args})"
 
@@ -123,7 +123,9 @@ class Bitmask:
                 bitmask, given the initial value and the flag.
         """
         if not issubclass(type(flag), self.AllFlags):
-            raise TypeError(f"can only apply {type_name(self.AllFlags)} to {type_name(self)}")
+            raise TypeError(
+                f"can only apply {type_name(self.AllFlags)} to {type_name(self)}"
+            )
         self.value = op(self.value, flag)
 
     def __mask_op(self, other, op):
@@ -142,17 +144,19 @@ class Bitmask:
         elif issubclass(type(other), self.AllFlags):
             new_bitmask._flag_op(other, op)
         else:
-            raise TypeError(f"can only apply {type_name(self)} or {type_name(self.AllFlags)} to {type_name(self)}")
+            raise TypeError(
+                f"can only apply {type_name(self)} or {type_name(self.AllFlags)} to {type_name(self)}"
+            )
 
         return new_bitmask
 
     def add(self, other):
         """Add single flag to the bitmask."""
-        self._flag_op(other, lambda a, b : a | b)
+        self._flag_op(other, lambda a, b: a | b)
 
     def __add__(self, other):
         """Implement + operator."""
-        return self.__mask_op(other, lambda a, b : a | b)
+        return self.__mask_op(other, lambda a, b: a | b)
 
     def __radd__(self, other):
         """Alias the + operator in reverse."""
@@ -168,7 +172,7 @@ class Bitmask:
 
     def __xor__(self, other):
         """Implement ^ operator."""
-        return self.__mask_op(other, lambda a, b : a ^ b)
+        return self.__mask_op(other, lambda a, b: a ^ b)
 
     def __rxor__(self, other):
         """Alias the ^ operator in reverse."""
@@ -176,7 +180,7 @@ class Bitmask:
 
     def __and__(self, other):
         """AND bitmasks/flags together."""
-        return self.__mask_op(other, lambda a, b : a & b)
+        return self.__mask_op(other, lambda a, b: a & b)
 
     def __rand__(self, other):
         """Alias the & operator in reverse."""
@@ -184,7 +188,7 @@ class Bitmask:
 
     def __sub__(self, other):
         """Subtract by bitmask/flag."""
-        return self.__mask_op(other, lambda a, b : a & ~b)
+        return self.__mask_op(other, lambda a, b: a & ~b)
 
     def discard(self, flag):
         """Remove flag bitmask if present.
@@ -195,9 +199,11 @@ class Bitmask:
             TypeError: `flag` is not a single Enum value.
         """
         if not issubclass(type(flag), self._AllFlags):
-            raise TypeError(f"can only discard {type_name(self._AllFlags)} from {type_name(self)}")
+            raise TypeError(
+                f"can only discard {type_name(self._AllFlags)} from {type_name(self)}"
+            )
 
-        return self._flag_op(flag, lambda a, b : a & ~b)
+        return self._flag_op(flag, lambda a, b: a & ~b)
 
     def remove(self, flag):
         """Remove `flag` from the bitmask.
@@ -207,7 +213,7 @@ class Bitmask:
         Raises:
             KeyError: flag is not in bitmask.
         """
-        if not flag in self:
+        if flag not in self:
             raise KeyError(type(flag), self.AllFlags)
 
         self.discard(flag)

@@ -5,24 +5,31 @@ from bitmask import Bitmask
 from enum import IntFlag
 import pytest
 
+
 class Desc(IntFlag):
     SMALL = 1
     ROUND = 1 << 1
     FUNKY = 1 << 2
     SONAR = 1 << 4
 
+
 class Colors(IntFlag):
     TEAL = 1
     PINK = 1 << 1
     BLUE = 1 << 2
+
 
 def test_eq():
     """Test equality checks."""
     # Equality
     assert Bitmask(Desc) == Bitmask(Desc)
     assert Bitmask(Desc, Desc.SMALL) == Bitmask(Desc, Desc.SMALL)
-    assert Bitmask(Desc, Desc.SMALL, Desc.ROUND) == Bitmask(Desc, Desc.SMALL, Desc.ROUND)
-    assert Bitmask(Desc, Desc.ROUND, Desc.SMALL) == Bitmask(Desc, Desc.SMALL, Desc.ROUND)
+    assert Bitmask(Desc, Desc.SMALL, Desc.ROUND) == Bitmask(
+        Desc, Desc.SMALL, Desc.ROUND
+    )
+    assert Bitmask(Desc, Desc.ROUND, Desc.SMALL) == Bitmask(
+        Desc, Desc.SMALL, Desc.ROUND
+    )
 
     # Inequality
     assert Bitmask(Desc, Desc.SMALL) != Bitmask(Desc, Desc.SMALL, Desc.ROUND)
@@ -37,6 +44,7 @@ def test_eq():
     assert Bitmask(Desc) != 0
     assert Bitmask(Desc) != Bitmask(Colors)
 
+
 def test_repr():
     """Ensure evaluating __repr__ creates an identical object."""
     mask = Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
@@ -44,6 +52,7 @@ def test_repr():
 
     empty_mask = Bitmask(Desc)
     assert eval(repr(empty_mask)) == empty_mask
+
 
 def test_add():
     """Test Bitmask.add() method."""
@@ -57,10 +66,11 @@ def test_add():
     mask.add(Desc.ROUND)
     assert mask == Bitmask(Desc, Desc.ROUND)
 
-    with pytest.raises(TypeError, match="can only apply Desc to Bitmask"):
+    with pytest.raises(TypeError, match=".* Desc .* Bitmask.*"):
         mask.add(1)
-    with pytest.raises(TypeError, match="can only apply Bitmask or Desc to Bitmask"):
+    with pytest.raises(TypeError, match=r".* Bitmask .* Desc .* Bitmask.*"):
         mask += 1
+
 
 def test_add_operator():
     """Test + operator."""
@@ -72,11 +82,14 @@ def test_add_operator():
     assert Bitmask(Desc) + Desc.ROUND == Bitmask(Desc, Desc.ROUND)
 
     # Union of bitmasks
-    assert Bitmask(Desc, Desc.SMALL) + Bitmask(Desc, Desc.FUNKY, Desc.ROUND) \
-        == Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
-    assert Bitmask(Desc, Desc.FUNKY, Desc.ROUND) + Bitmask(Desc, Desc.SMALL) \
-        == Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+    assert Bitmask(Desc, Desc.SMALL) + Bitmask(Desc, Desc.FUNKY, Desc.ROUND) == Bitmask(
+        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+    )
+    assert Bitmask(Desc, Desc.FUNKY, Desc.ROUND) + Bitmask(Desc, Desc.SMALL) == Bitmask(
+        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+    )
     assert Bitmask(Desc) + Bitmask(Desc) == Bitmask(Desc)
+
 
 def test_add_inline():
     """Test += operator."""
@@ -92,6 +105,7 @@ def test_add_inline():
     mask += Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
     assert mask == Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
 
+
 def test_or_operator():
     """Test | operator."""
     # Individual flags
@@ -102,9 +116,14 @@ def test_or_operator():
     assert Bitmask(Desc) | Desc.ROUND == Bitmask(Desc, Desc.ROUND)
 
     # Union of bitmasks
-    assert Bitmask(Desc, Desc.SMALL) | Bitmask(Desc, Desc.FUNKY, Desc.ROUND) == Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
-    assert Bitmask(Desc, Desc.FUNKY, Desc.ROUND) | Bitmask(Desc, Desc.SMALL) == Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
+    assert Bitmask(Desc, Desc.SMALL) | Bitmask(Desc, Desc.FUNKY, Desc.ROUND) == Bitmask(
+        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+    )
+    assert Bitmask(Desc, Desc.FUNKY, Desc.ROUND) | Bitmask(Desc, Desc.SMALL) == Bitmask(
+        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+    )
     assert Bitmask(Desc) | Bitmask(Desc) == Bitmask(Desc)
+
 
 def test_or_inline():
     """Test |= operator."""
@@ -120,6 +139,7 @@ def test_or_inline():
     mask |= Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
     assert mask == Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
 
+
 def test_and_operator():
     """Test & operator."""
     # Individual flags
@@ -130,9 +150,14 @@ def test_and_operator():
     assert Bitmask(Desc) & Desc.ROUND == Bitmask(Desc)
 
     # AND of bitmasks
-    assert Bitmask(Desc, Desc.FUNKY, Desc.SONAR) & Bitmask(Desc, Desc.FUNKY, Desc.ROUND) == Bitmask(Desc, Desc.FUNKY)
-    assert Bitmask(Desc, Desc.FUNKY, Desc.ROUND) & Bitmask(Desc, Desc.SMALL) == Bitmask(Desc)
+    assert Bitmask(Desc, Desc.FUNKY, Desc.SONAR) & Bitmask(
+        Desc, Desc.FUNKY, Desc.ROUND
+    ) == Bitmask(Desc, Desc.FUNKY)
+    assert Bitmask(Desc, Desc.FUNKY, Desc.ROUND) & Bitmask(Desc, Desc.SMALL) == Bitmask(
+        Desc
+    )
     assert Bitmask(Desc) & Bitmask(Desc) == Bitmask(Desc)
+
 
 def test_and_inline():
     """Test &= operator."""
@@ -147,7 +172,8 @@ def test_and_inline():
     mask = Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
     mask &= Bitmask(Desc, Desc.SMALL)
     assert mask == Bitmask(Desc)
-        
+
+
 def test_remove():
     """Test the `Bitmask.remove()` method."""
     mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
@@ -159,6 +185,7 @@ def test_remove():
     empty_mask = Bitmask(Desc)
     with pytest.raises(KeyError):
         empty_mask.remove(Desc.SMALL)
+
 
 def test_discard():
     """Test the `Bitmask.discard()` method."""
@@ -174,23 +201,32 @@ def test_discard():
     with pytest.raises(TypeError, match="can only discard Desc from Bitmask"):
         empty_mask.discard(Bitmask(Desc, Desc.SMALL))
 
+
 def test_subtract():
     """Test - operator."""
     # Individual flag
-    assert Bitmask(Desc, Desc.SMALL, Desc.FUNKY) - Desc.SMALL == Bitmask(Desc, Desc.FUNKY)
-    assert Bitmask(Desc, Desc.FUNKY, Desc.SMALL) - Desc.SMALL == Bitmask(Desc, Desc.FUNKY)
+    assert Bitmask(Desc, Desc.SMALL, Desc.FUNKY) - Desc.SMALL == Bitmask(
+        Desc, Desc.FUNKY
+    )
+    assert Bitmask(Desc, Desc.FUNKY, Desc.SMALL) - Desc.SMALL == Bitmask(
+        Desc, Desc.FUNKY
+    )
 
     # Two bitmasks
-    assert Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND) \
-        - Bitmask(Desc, Desc.SMALL, Desc.ROUND) == Bitmask(Desc, Desc.FUNKY)
-    assert Bitmask(Desc, Desc.FUNKY, Desc.SMALL) \
-        - Bitmask(Desc, Desc.SMALL, Desc.FUNKY) == Bitmask(Desc)
+    assert Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND) - Bitmask(
+        Desc, Desc.SMALL, Desc.ROUND
+    ) == Bitmask(Desc, Desc.FUNKY)
+    assert Bitmask(Desc, Desc.FUNKY, Desc.SMALL) - Bitmask(
+        Desc, Desc.SMALL, Desc.FUNKY
+    ) == Bitmask(Desc)
+
 
 def test_subtract_inline():
     """Test -= operator."""
     mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
     mask -= Desc.SMALL
     assert mask == Bitmask(Desc, Desc.FUNKY)
+
 
 def test_xor_operator():
     """Test ^ operator."""
@@ -202,10 +238,14 @@ def test_xor_operator():
     assert Bitmask(Desc) ^ Desc.ROUND == Bitmask(Desc, Desc.ROUND)
 
     # XOR bitmasks
-    assert Bitmask(Desc, Desc.SMALL) ^ Bitmask(Desc, Desc.FUNKY, Desc.ROUND) == Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND)
-    assert Bitmask(Desc, Desc.FUNKY, Desc.ROUND) \
-        ^ Bitmask(Desc, Desc.FUNKY, Desc.ROUND) == Bitmask(Desc)
+    assert Bitmask(Desc, Desc.SMALL) ^ Bitmask(Desc, Desc.FUNKY, Desc.ROUND) == Bitmask(
+        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+    )
+    assert Bitmask(Desc, Desc.FUNKY, Desc.ROUND) ^ Bitmask(
+        Desc, Desc.FUNKY, Desc.ROUND
+    ) == Bitmask(Desc)
     assert Bitmask(Desc) ^ Bitmask(Desc) == Bitmask(Desc)
+
 
 def test_xor_inline():
     """Test ^= operator."""
@@ -223,12 +263,13 @@ def test_xor_inline():
     mask ^= Bitmask(Desc, Desc.ROUND, Desc.FUNKY)
     assert mask == Bitmask(Desc, Desc.FUNKY)
 
+
 def test_value():
     """Ensure Bitmask.value lines up with the state."""
     mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
     assert mask.value == 5
     mask.add(Desc.ROUND)
-    assert mask.value ==  7
+    assert mask.value == 7
 
     assert Bitmask(Desc).value == 0
 
@@ -241,6 +282,7 @@ def test_value():
         mask.value = 1j
     with pytest.raises(TypeError, match="value must be an integer"):
         mask.value = 2.5
+
 
 def test_contains():
     """Test `flag in mask` check."""
@@ -259,11 +301,16 @@ def test_contains():
     assert Bitmask(Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND) not in mask
     assert Bitmask(Desc, Desc.FUNKY) in mask
     with pytest.raises(TypeError, match="item must be Bitmask or Desc"):
-        x = 1 in mask
+        assert 1 in mask
+
 
 def test_iter():
     """Test iteration."""
-    assert [i for i in Bitmask(Desc, Desc.SMALL, Desc.FUNKY)] == [Desc.SMALL, Desc.FUNKY]
+    assert [i for i in Bitmask(Desc, Desc.SMALL, Desc.FUNKY)] == [
+        Desc.SMALL,
+        Desc.FUNKY,
+    ]
+
 
 def test_str():
     """Test string conversion."""
@@ -275,6 +322,7 @@ def test_str():
     assert str(Bitmask(Desc, Desc.ROUND)) == "ROUND"
     assert str(Bitmask(Desc)) == "0"
 
+
 def test_int():
     """Test int conversion."""
     mask = Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
@@ -282,9 +330,9 @@ def test_int():
     mask.value = 4
     assert int(mask) == mask.value
 
+
 def test_hex():
     """Test hexadecimal conversion."""
     assert hex(Bitmask(Desc, Desc.SMALL)) == "0x1"
     assert hex(Bitmask(Desc)) == "0x0"
     assert hex(Bitmask(Desc, Desc.SONAR)) == "0x10"
-
