@@ -40,10 +40,19 @@ path = "bitmask/__about__.py"
 dependencies = [
   "pytest",
   "pytest-cov",
+  "flake8",
+  "black",
 ]
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=bitmask --cov=tests"
 no-cov = "cov --no-cov"
+style = [
+	"flake8 {args:.}",
+	"black --check --diff {args:.}",
+]
+fmt = [
+	"black {args:.}",
+]
 
 [[tool.hatch.envs.test.matrix]]
 python = ["37", "38", "39", "310"]
