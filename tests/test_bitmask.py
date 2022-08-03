@@ -79,10 +79,10 @@ def test_add_operator():
 
     # Union of bitmasks
     assert Bitmask(Desc.SMALL) + Bitmask(Desc.FUNKY, Desc.ROUND) == Bitmask(
-        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+        Desc.SMALL, Desc.FUNKY, Desc.ROUND
     )
     assert Bitmask(Desc.FUNKY, Desc.ROUND) + Bitmask(Desc.SMALL) == Bitmask(
-        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+        Desc.SMALL, Desc.FUNKY, Desc.ROUND
     )
     assert Bitmask() + Bitmask() == Bitmask()
 
@@ -113,10 +113,10 @@ def test_or_operator():
 
     # Union of bitmasks
     assert Bitmask(Desc.SMALL) | Bitmask(Desc.FUNKY, Desc.ROUND) == Bitmask(
-        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+        Desc.SMALL, Desc.FUNKY, Desc.ROUND
     )
     assert Bitmask(Desc.FUNKY, Desc.ROUND) | Bitmask(Desc.SMALL) == Bitmask(
-        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+        Desc.SMALL, Desc.FUNKY, Desc.ROUND
     )
     assert Bitmask() | Bitmask() == Bitmask()
 
@@ -147,9 +147,9 @@ def test_and_operator():
 
     # AND of bitmasks
     assert Bitmask(Desc.FUNKY, Desc.SONAR) & Bitmask(
-        Desc, Desc.FUNKY, Desc.ROUND
+        Desc.FUNKY, Desc.ROUND
     ) == Bitmask(Desc.FUNKY)
-    assert Bitmask(Desc.FUNKY, Desc.ROUND) & Bitmask(Desc.SMALL) == Bitmask(Desc)
+    assert Bitmask(Desc.FUNKY, Desc.ROUND) & Bitmask(Desc.SMALL) == Bitmask()
     assert Bitmask() & Bitmask() == Bitmask()
 
 
@@ -204,7 +204,7 @@ def test_subtract():
 
     # Two bitmasks
     assert Bitmask(Desc.SMALL, Desc.FUNKY, Desc.ROUND) - Bitmask(
-        Desc, Desc.SMALL, Desc.ROUND
+        Desc.SMALL, Desc.ROUND
     ) == Bitmask(Desc.FUNKY)
     assert (
         Bitmask(Desc.FUNKY, Desc.SMALL) - Bitmask(Desc.SMALL, Desc.FUNKY)
@@ -230,7 +230,7 @@ def test_xor_operator():
 
     # XOR bitmasks
     assert Bitmask(Desc.SMALL) ^ Bitmask(Desc.FUNKY, Desc.ROUND) == Bitmask(
-        Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
+        Desc.SMALL, Desc.FUNKY, Desc.ROUND
     )
     assert (
         Bitmask(Desc.FUNKY, Desc.ROUND) ^ Bitmask(Desc.FUNKY, Desc.ROUND)
