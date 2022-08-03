@@ -41,6 +41,32 @@ def test_eq():
     assert Bitmask(Desc.SMALL) != Bitmask(Colors.TEAL)
 
 
+def test_all_flags():
+    """Test the Bitmask.AllFlags and Bitmask.defined attributes."""
+    mask = Bitmask()
+    assert not mask.defined
+    mask.AllFlags = Desc
+    assert mask.defined
+    with pytest.raises(TypeError, match="conflicting Enum types"):
+        mask += Colors.TEAL
+
+    mask = Bitmask()
+    mask.add(Desc.SMALL)
+    assert mask.AllFlags == Desc
+
+    mask = Bitmask()
+    with pytest.raises(TypeError, match="flags aren't Enum values"):
+        mask.AllFlags = 1
+
+
+def test_format_types():
+    """Test error formatting."""
+    mask = Bitmask()
+    assert mask._Bitmask__format_types() == "Bitmask"
+    mask += Desc.SMALL
+    assert mask._Bitmask__format_types() == "Bitmask or Desc"
+
+
 def test_repr():
     """Ensure evaluating __repr__ creates an identical object."""
     mask = Bitmask(Desc.ROUND, Desc.FUNKY)
