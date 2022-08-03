@@ -24,7 +24,7 @@ class Bitmask:
                 ROUND = 1 << 1
                 FUNKY = 1 << 2
 
-            bmask = Bitmask(Desc, Desc.BIG, Desc.FUNKY)
+            bmask = Bitmask(Desc.BIG, Desc.FUNKY)
 
         Determine if a flag enabled::
 

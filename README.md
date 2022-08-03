@@ -32,7 +32,7 @@ class Desc(IntFlag):
 	FUNKY = 1 << 2
 	LARGE = 1 << 3
 
-marble = Bitmask(Desc, Desc.SMALL, Desc.ROUND, Desc.FUNKY)
+marble = Bitmask(Desc.SMALL, Desc.ROUND, Desc.FUNKY)
 
 Desc.SMALL in marble
 >>> True
@@ -40,6 +40,6 @@ Desc.SMALL in marble
 Desc.LARGE in marble
 >>> False
 
-Bitmask(Desc, Desc.SMALL, Desc.ROUND) in marble
+Bitmask(Desc.SMALL, Desc.ROUND) in marble
 >>> True
 ```
