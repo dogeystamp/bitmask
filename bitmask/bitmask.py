@@ -62,7 +62,7 @@ class Bitmask:
 
     @AllFlags.setter
     def AllFlags(self, value):
-        if not issubclass(type(self.AllFlags), EnumMeta):
+        if not issubclass(type(value), EnumMeta):
             raise TypeError("flags aren't Enum values")
 
         # Allow setting only once
