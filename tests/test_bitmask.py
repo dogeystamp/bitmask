@@ -24,8 +24,8 @@ def test_eq():
     # Equality
     assert Bitmask() == Bitmask()
     assert Bitmask(Desc.SMALL) == Bitmask(Desc.SMALL)
-    assert Bitmask(Desc.SMALL, Desc.ROUND) == Bitmask(Desc, Desc.SMALL, Desc.ROUND)
-    assert Bitmask(Desc.ROUND, Desc.SMALL) == Bitmask(Desc, Desc.SMALL, Desc.ROUND)
+    assert Bitmask(Desc.SMALL, Desc.ROUND) == Bitmask(Desc.SMALL, Desc.ROUND)
+    assert Bitmask(Desc.ROUND, Desc.SMALL) == Bitmask(Desc.SMALL, Desc.ROUND)
 
     # Inequality
     assert Bitmask(Desc.SMALL) != Bitmask(Desc.SMALL, Desc.ROUND)
@@ -38,7 +38,7 @@ def test_eq():
     # Wrong types
     assert Bitmask() != "Hello World!"
     assert Bitmask() != 0
-    assert Bitmask() != Bitmask(Colors)
+    assert Bitmask(Desc.SMALL) != Bitmask(Colors.TEAL)
 
 
 def test_repr():
@@ -62,7 +62,7 @@ def test_add():
     mask.add(Desc.ROUND)
     assert mask == Bitmask(Desc.ROUND)
 
-    with pytest.raises(TypeError, match=".* Desc .* Bitmask.*"):
+    with pytest.raises(TypeError, match=".* Bitmask .* Desc .* Bitmask.*"):
         mask.add(1)
     with pytest.raises(TypeError, match=r".* Bitmask .* Desc .* Bitmask.*"):
         mask += 1
@@ -192,22 +192,22 @@ def test_discard():
     empty_mask = Bitmask()
     empty_mask.discard(Desc.SMALL)
     assert empty_mask == Bitmask()
-    with pytest.raises(TypeError, match="can only discard Desc from Bitmask"):
+    with pytest.raises(TypeError, match=".* Bitmask or Desc from Bitmask"):
         empty_mask.discard(Bitmask(Desc.SMALL))
 
 
 def test_subtract():
     """Test - operator."""
     # Individual flag
-    assert Bitmask(Desc.SMALL, Desc.FUNKY) - Desc.SMALL == Bitmask(Desc, Desc.FUNKY)
-    assert Bitmask(Desc.FUNKY, Desc.SMALL) - Desc.SMALL == Bitmask(Desc, Desc.FUNKY)
+    assert Bitmask(Desc.SMALL, Desc.FUNKY) - Desc.SMALL == Bitmask(Desc.FUNKY)
+    assert Bitmask(Desc.FUNKY, Desc.SMALL) - Desc.SMALL == Bitmask(Desc.FUNKY)
 
     # Two bitmasks
     assert Bitmask(Desc.SMALL, Desc.FUNKY, Desc.ROUND) - Bitmask(
         Desc, Desc.SMALL, Desc.ROUND
     ) == Bitmask(Desc.FUNKY)
     assert (
-        Bitmask(Desc.FUNKY, Desc.SMALL) - Bitmask(Desc, Desc.SMALL, Desc.FUNKY)
+        Bitmask(Desc.FUNKY, Desc.SMALL) - Bitmask(Desc.SMALL, Desc.FUNKY)
         == Bitmask()
     )
 
@@ -233,7 +233,7 @@ def test_xor_operator():
         Desc, Desc.SMALL, Desc.FUNKY, Desc.ROUND
     )
     assert (
-        Bitmask(Desc.FUNKY, Desc.ROUND) ^ Bitmask(Desc, Desc.FUNKY, Desc.ROUND)
+        Bitmask(Desc.FUNKY, Desc.ROUND) ^ Bitmask(Desc.FUNKY, Desc.ROUND)
         == Bitmask()
     )
     assert Bitmask() ^ Bitmask() == Bitmask()
