@@ -101,9 +101,9 @@ class Bitmask:
 
     def __repr__(self):
         enum_name = fullname(self.AllFlags(0))
-        args = ", ".join([enum_name] + [f"{enum_name}.{flag.name}" for flag in self])
+        args = [enum_name] + [f"{enum_name}.{flag.name}" for flag in self]
 
-        return f"{fullname(self)}({args})"
+        return f"{fullname(self)}({', '.join(args)})"
 
     def __eq__(self, other):
         """Check equality."""
@@ -114,45 +114,28 @@ class Bitmask:
         else:
             return other.value == self.value
 
-    def _flag_op(self, flag, op):
-        """Apply a single flag to the bitmask.
-
-        Args:
-            flag (enum value): flag to apply to the bitmask.
-            op (function): function that returns new numerical value for the
-                bitmask, given the initial value and the flag.
-        """
-        if not issubclass(type(flag), self.AllFlags):
-            raise TypeError(
-                f"can only apply {type_name(self.AllFlags)} to {type_name(self)}"
-            )
-        self.value = op(self.value, flag)
-
     def __mask_op(self, other, op):
         """Run operations on two bitmasks/bitmask and flag.
 
-        Will run `__flag_op` with each flag in the other bitmask.
-
         Args:
             other (Bitmask or Enum value): bitmask to run operation with.
-            op (function): operation passed to `__flag_op` for applying individual flags.
+            op (function): operation to run with the two bitmask values.
+
+        Returns:
+            Resulting Bitmask object of the operation.
         """
-        new_bitmask = self.__class__(self.AllFlags, *(flag for flag in self))
+        new_bitmask = self.__class__(self._AllFlags)
 
         if issubclass(type(other), type(self)):
             new_bitmask.value = op(self.value, other.value)
         elif issubclass(type(other), self.AllFlags):
-            new_bitmask._flag_op(other, op)
+            new_bitmask.value = op(self.value, other)
         else:
             raise TypeError(
                 f"can only apply {type_name(self)} or {type_name(self.AllFlags)} to {type_name(self)}"
             )
 
         return new_bitmask
-
-    def add(self, other):
-        """Add single flag to the bitmask."""
-        self._flag_op(other, lambda a, b: a | b)
 
     def __add__(self, other):
         """Implement + operator."""
@@ -161,6 +144,10 @@ class Bitmask:
     def __radd__(self, other):
         """Alias the + operator in reverse."""
         return self.__add__(other)
+
+    def add(self, other):
+        """Add flag to the bitmask."""
+        self.value = (self + other).value
 
     def __or__(self, other):
         """Implement | operator."""
@@ -203,7 +190,7 @@ class Bitmask:
                 f"can only discard {type_name(self._AllFlags)} from {type_name(self)}"
             )
 
-        return self._flag_op(flag, lambda a, b: a & ~b)
+        self.value = self.__mask_op(flag, lambda a, b: a & ~b).value
 
     def remove(self, flag):
         """Remove `flag` from the bitmask.
