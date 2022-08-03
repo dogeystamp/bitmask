@@ -4,6 +4,7 @@
 """Utilities for manipulating bitmasks."""
 
 from bitmask.util import type_name, fullname
+from enum import Enum, EnumMeta, IntFlag
 
 
 class Bitmask:
@@ -44,11 +45,12 @@ class Bitmask:
             bmask.discard(Desc.ROUND)
     """
 
-    def __init__(self, AllFlags, *flags):
+    def __init__(self, *flags):
         """Init symbol enum and state."""
-        self._AllFlags = AllFlags
 
-        self._value = self._AllFlags(0)
+        self._value = 0
+        # Placeholder, modified later in __mask_op()
+        self._AllFlags = IntFlag('', '')
 
         for flag in flags:
             self.add(flag)
@@ -57,6 +59,40 @@ class Bitmask:
     def AllFlags(self):
         """Enum defining all flags used in the bitmask, and their values."""
         return self._AllFlags
+
+    @AllFlags.setter
+    def AllFlags(self, value):
+        if not issubclass(type(self.AllFlags), EnumMeta):
+            raise TypeError("flags aren't Enum values")
+
+        # Allow setting only once
+        if len(self._AllFlags) != 0:
+            if self.AllFlags != value:
+                raise TypeError("conflicting Enum types")
+
+        self._AllFlags = value
+
+    @property
+    def defined(self):
+        """Bool showing whether AllFlags is set, or still the placeholder."""
+        return len(self.AllFlags) > 0
+
+    def __format_types(self):
+        """Format the acceptable types for use in operations.
+
+        Returns:
+            String of format "[self's type] or [self's Enum type]". If we do
+            not have an Enum assigned yet, only self's type will be returned.
+        """
+        types = []
+        types.append(type_name(self))
+        if self.defined:
+            types.append(type_name(self.AllFlags))
+
+        if len(types) > 1:
+            return ', '.join(types[:-1]) + " or " + types[-1]
+        else:
+            return types[0]
 
     @property
     def value(self):
@@ -77,11 +113,12 @@ class Bitmask:
                     return False
             else:
                 return True
-        elif issubclass(type(item), self.AllFlags):
+        elif issubclass(type(item), self.AllFlags) \
+                or not self.defined:
             return bool(self.value & item)
         else:
             raise TypeError(
-                f"item must be {type_name(self)} or {type_name(self.AllFlags)}"
+                f"item must be {self.__format_types()}"
             )
 
     def __iter__(self):
@@ -101,7 +138,7 @@ class Bitmask:
 
     def __repr__(self):
         enum_name = fullname(self.AllFlags(0))
-        args = [enum_name] + [f"{enum_name}.{flag.name}" for flag in self]
+        args = [f"{enum_name}.{flag.name}" for flag in self]
 
         return f"{fullname(self)}({', '.join(args)})"
 
@@ -109,10 +146,11 @@ class Bitmask:
         """Check equality."""
         if not issubclass(type(other), type(self)):
             return False
-        elif not issubclass(other.AllFlags, self.AllFlags):
-            return False
         else:
-            return other.value == self.value
+            if other.defined and self.defined:
+                if other.AllFlags != self.AllFlags:
+                    return False
+            return set(flag for flag in other) == set(flag for flag in self)
 
     def __mask_op(self, other, op):
         """Run operations on two bitmasks/bitmask and flag.
@@ -124,16 +162,21 @@ class Bitmask:
         Returns:
             Resulting Bitmask object of the operation.
         """
-        new_bitmask = self.__class__(self._AllFlags)
-
+        other_val = 0
         if issubclass(type(other), type(self)):
-            new_bitmask.value = op(self.value, other.value)
-        elif issubclass(type(other), self.AllFlags):
-            new_bitmask.value = op(self.value, other)
+            self.AllFlags = other.AllFlags
+            other_val = other.value
+        elif issubclass(type(other), Enum):
+            self.AllFlags = type(other)
+            other_val = other
         else:
             raise TypeError(
-                f"can only apply {type_name(self)} or {type_name(self.AllFlags)} to {type_name(self)}"
+                f"can only apply {self.__format_types()} to {type_name(self)}"
             )
+
+        new_bitmask = self.__class__()
+        new_bitmask.AllFlags = self.AllFlags
+        new_bitmask.value = op(self.value, other_val)
 
         return new_bitmask
 
@@ -185,9 +228,9 @@ class Bitmask:
         Raises:
             TypeError: `flag` is not a single Enum value.
         """
-        if not issubclass(type(flag), self._AllFlags):
+        if self.defined and not issubclass(type(flag), self._AllFlags):
             raise TypeError(
-                f"can only discard {type_name(self._AllFlags)} from {type_name(self)}"
+                f"can only discard {self.__format_types()} from {type_name(self)}"
             )
 
         self.value = self.__mask_op(flag, lambda a, b: a & ~b).value
