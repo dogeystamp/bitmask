@@ -50,7 +50,7 @@ class Bitmask:
 
         self._value = 0
         # Placeholder, modified later in __mask_op()
-        self._AllFlags = IntFlag('', '')
+        self._AllFlags = IntFlag("", "")
 
         for flag in flags:
             self.add(flag)
@@ -90,7 +90,7 @@ class Bitmask:
             types.append(type_name(self.AllFlags))
 
         if len(types) > 1:
-            return ', '.join(types[:-1]) + " or " + types[-1]
+            return ", ".join(types[:-1]) + " or " + types[-1]
         else:
             return types[0]
 
@@ -113,13 +113,10 @@ class Bitmask:
                     return False
             else:
                 return True
-        elif issubclass(type(item), self.AllFlags) \
-                or not self.defined:
+        elif issubclass(type(item), self.AllFlags) or not self.defined:
             return bool(self.value & item)
         else:
-            raise TypeError(
-                f"item must be {self.__format_types()}"
-            )
+            raise TypeError(f"item must be {self.__format_types()}")
 
     def __iter__(self):
         """Return list of enabled flags."""

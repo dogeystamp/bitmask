@@ -146,9 +146,9 @@ def test_and_operator():
     assert Bitmask() & Desc.ROUND == Bitmask()
 
     # AND of bitmasks
-    assert Bitmask(Desc.FUNKY, Desc.SONAR) & Bitmask(
-        Desc.FUNKY, Desc.ROUND
-    ) == Bitmask(Desc.FUNKY)
+    assert Bitmask(Desc.FUNKY, Desc.SONAR) & Bitmask(Desc.FUNKY, Desc.ROUND) == Bitmask(
+        Desc.FUNKY
+    )
     assert Bitmask(Desc.FUNKY, Desc.ROUND) & Bitmask(Desc.SMALL) == Bitmask()
     assert Bitmask() & Bitmask() == Bitmask()
 
@@ -207,8 +207,7 @@ def test_subtract():
         Desc.SMALL, Desc.ROUND
     ) == Bitmask(Desc.FUNKY)
     assert (
-        Bitmask(Desc.FUNKY, Desc.SMALL) - Bitmask(Desc.SMALL, Desc.FUNKY)
-        == Bitmask()
+        Bitmask(Desc.FUNKY, Desc.SMALL) - Bitmask(Desc.SMALL, Desc.FUNKY) == Bitmask()
     )
 
 
@@ -233,8 +232,7 @@ def test_xor_operator():
         Desc.SMALL, Desc.FUNKY, Desc.ROUND
     )
     assert (
-        Bitmask(Desc.FUNKY, Desc.ROUND) ^ Bitmask(Desc.FUNKY, Desc.ROUND)
-        == Bitmask()
+        Bitmask(Desc.FUNKY, Desc.ROUND) ^ Bitmask(Desc.FUNKY, Desc.ROUND) == Bitmask()
     )
     assert Bitmask() ^ Bitmask() == Bitmask()
 
