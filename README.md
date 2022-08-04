@@ -43,3 +43,9 @@ Desc.LARGE in marble
 Bitmask(Desc.SMALL, Desc.ROUND) in marble
 >>> True
 ```
+
+## Installation
+
+```
+$ pip install git+https://github.com/dogeystamp/bitmask@main
+```
