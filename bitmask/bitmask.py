@@ -11,7 +11,6 @@ class Bitmask:
     """Generic bitmask, which represents multiple Enum values.
 
     Args:
-        AllFlags (Enum): Enum of values with corresponding bitmasks.
         flags: Variable length list of flags to enable.
 
     Examples:
@@ -57,7 +56,12 @@ class Bitmask:
 
     @property
     def AllFlags(self):
-        """Enum defining all flags used in the bitmask, and their values."""
+        """Enum defining all flags used in the bitmask, and their values.
+
+        This is automatically set after operations with flags, and can not be
+        changed later. The attribute can also be manually set, if the mask is
+        undefined.
+        """
         return self._AllFlags
 
     @AllFlags.setter
@@ -81,8 +85,8 @@ class Bitmask:
         """Format the acceptable types for use in operations.
 
         Returns:
-            String of format "[self's type] or [self's Enum type]". If we do
-            not have an Enum assigned yet, only self's type will be returned.
+            String of format "[self's type] or [self's Enum type]". If AllFlags
+            isn't defined, only self's type will be returned.
         """
         types = []
         types.append(type_name(self))
