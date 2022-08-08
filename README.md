@@ -1,10 +1,10 @@
 # Bitmask
 
-Implementation of a Bitmask class in Python, allowing easy manipulation of EnumFlag values.
+Implementation of a Bitmask class in Python, allowing easy manipulation of IntFlag values.
 
 ## Features
 
-* create bitmasks from any EnumFlag type
+* create bitmasks from any IntFlag type
 
 * simple "flag in Bitmask" syntax
 
