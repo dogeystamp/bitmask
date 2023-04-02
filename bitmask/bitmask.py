@@ -12,6 +12,7 @@ class Bitmask:
 
     Args:
         flags: Variable length list of flags to enable.
+        AllFlags (optional): IntFlag object representing all possible flags.
 
     Examples:
         Initialise bitmask::
@@ -44,12 +45,15 @@ class Bitmask:
             bmask.discard(Desc.ROUND)
     """
 
-    def __init__(self, *flags):
+    def __init__(self, *flags, AllFlags=None):
         """Init symbol enum and state."""
 
         self._value = 0
         # Placeholder, modified later in __mask_op()
         self._AllFlags = IntFlag("", "")
+
+        if AllFlags:
+            self.AllFlags = AllFlags
 
         for flag in flags:
             self.add(flag)

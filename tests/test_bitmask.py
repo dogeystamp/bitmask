@@ -58,6 +58,11 @@ def test_all_flags():
     with pytest.raises(TypeError, match="flags aren't Enum values"):
         mask.AllFlags = 1
 
+    mask = Bitmask(AllFlags=Desc)
+    assert mask.defined
+    with pytest.raises(TypeError, match="conflicting Enum types"):
+        mask += Colors.TEAL
+
 
 def test_format_types():
     """Test error formatting."""
